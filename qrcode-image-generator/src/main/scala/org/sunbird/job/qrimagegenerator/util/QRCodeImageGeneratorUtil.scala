@@ -58,7 +58,8 @@ class QRCodeImageGeneratorUtil(config: QRCodeImageGeneratorConfig, cassandraUtil
         logger.info("QRCodeImageGeneratorUtil:createQRImages: imageDownloadUrl - " + imageDownloadUrl(1))
         logger.info("QRCodeImageGeneratorUtil:createQRImages: config.cloudStorageEndpoint - " + config.cloudStorageEndpoint+"  config.cloudStorageProxyHost - "+config.cloudStorageProxyHost)
         var newDownloadUrl = imageDownloadUrl(1).replaceAll(config.cloudStorageEndpoint, config.cloudStorageProxyHost)
-        logger.info("QRCodeImageGeneratorService:processMessage: newDownloadUrl before - " + newDownloadUrl)
+        logger.info("QRCodeImageGeneratorService:processMessage: newDownloadUrl before - " + newDownloadUrl)     
+        println("File Name ::::::::::::::::::::::::::::::::::::::::::::::::::::::: " + fileName)
         updateCassandra(config.cassandraDialCodeImageTable, 2, newDownloadUrl, "filename", fileName, metrics)
       } catch {
         case e: Exception =>
