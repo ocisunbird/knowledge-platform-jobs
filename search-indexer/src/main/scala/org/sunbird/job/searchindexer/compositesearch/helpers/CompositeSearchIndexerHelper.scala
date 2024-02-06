@@ -7,6 +7,7 @@ import org.sunbird.job.searchindexer.models.CompositeIndexer
 import org.sunbird.job.util.{ElasticSearchUtil, ScalaJsonUtil}
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 trait CompositeSearchIndexerHelper {
 
@@ -33,9 +34,17 @@ trait CompositeSearchIndexerHelper {
       val addedProperties = transactionData.getOrElse("properties", Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]]
       addedProperties.foreach(property => {
         if (!definition.externalProperties.contains(property._1)) {
-          val propertyNewValue: AnyRef = property._2.asInstanceOf[Map[String, AnyRef]].getOrElse("nv", null) match {
-            case propVal: List[AnyRef] => if(propVal.isEmpty) null else propVal
-            case _ => property._2.asInstanceOf[Map[String, AnyRef]].getOrElse("nv", null)
+          val propertyNewValue: AnyRef = if (property._1.equals("maxAttempts")) {
+            val nvValue = property._2.asInstanceOf[Map[String, AnyRef]].getOrElse("nv", null)
+            Try(nvValue.toString.toLong).toOption.filter(x => x < 100) match {
+              case Some(value) => value.toString
+              case None => 100.toString
+            }
+          } else {
+            property._2.asInstanceOf[Map[String, AnyRef]].getOrElse("nv", null) match {
+              case propVal: List[AnyRef] => if (propVal.isEmpty) null else propVal
+              case _ => property._2.asInstanceOf[Map[String, AnyRef]].getOrElse("nv", null)
+            }
           }
           if (propertyNewValue == null) indexDocument.remove(property._1) else indexDocument.put(property._1, addMetadataToDocument(property._1, propertyNewValue, nestedFields))
         }
