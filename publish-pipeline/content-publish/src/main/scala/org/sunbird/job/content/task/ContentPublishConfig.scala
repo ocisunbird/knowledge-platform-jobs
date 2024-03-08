@@ -84,7 +84,7 @@ class ContentPublishConfig(override val config: Config) extends PublishConfig(co
   val contentFolder: String = if (config.hasPath("cloud_storage.folder.content")) config.getString("cloud_storage.folder.content") else "content"
   val artifactFolder: String = if (config.hasPath("cloud_storage.folder.artifact")) config.getString("cloud_storage.folder.artifact") else "artifact"
   val retryAssetDownloadsCount: Integer = if (config.hasPath("content.retry_asset_download_count")) config.getInt("content.retry_asset_download_count") else 1
-  val artifactSizeForOnline: Double = if (config.hasPath("content.artifact.size.for_online")) config.getDouble("content.artifact.size.for_online") else 209715200
+  val artifactSizeForOnline: Double = if (config.hasPath("content.artifact.size.for_online")) config.getDouble("content.artifact.size.for_online") else 524288000
   val bundleLocation: String = if (config.hasPath("content.bundleLocation")) config.getString("content.bundleLocation") else "/data/contentBundle/"
 
   val extractableMimeTypes = List("application/vnd.ekstep.ecml-archive", "application/vnd.ekstep.html-archive", "application/vnd.ekstep.plugin-archive", "application/vnd.ekstep.h5p-archive")

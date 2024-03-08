@@ -58,7 +58,7 @@ trait ContentPublisher extends ObjectReader with ObjectValidator with ObjectEnri
     val publishType = obj.getString("publish_type", "Public")
     val status = if (StringUtils.equalsIgnoreCase("Unlisted", publishType)) "Unlisted" else "Live"
     val updatedMeta: Map[String, AnyRef] = if (contentSize > configSize) obj.metadata ++ extraMeta ++ Map("contentDisposition" -> "online-only", "status" -> status) else obj.metadata ++ extraMeta ++ Map("status" -> status)
-
+    logger.info(s"content size $contentSize and config size = $configSize and content metadata = $updatedMeta")
     val updatedCompatibilityLevel = setCompatibilityLevel(obj, updatedMeta).getOrElse(updatedMeta)
     val updatedPragma = setPragma(obj, updatedCompatibilityLevel).getOrElse(updatedCompatibilityLevel)
 
