@@ -44,7 +44,12 @@ trait ObjectBundle {
       val objectType: String = if(!data.contains("objectType") || data.getOrElse("objectType", "").asInstanceOf[String].isBlank || data.getOrElse("objectType", "").asInstanceOf[String].isEmpty) {
         val metaData = Option(neo4JUtil.getNodeProperties(identifier)).getOrElse(neo4JUtil.getNodeProperties(identifier)).asScala.toMap
         metaData.getOrElse("IL_FUNC_OBJECT_TYPE", "").asInstanceOf[String]
-      } else data.getOrElse("objectType", "").asInstanceOf[String].replaceAll("Image", "")
+      } else {
+        Option(data.getOrElse("objectType", "").asInstanceOf[String]) match {
+          case Some(value) => value.replaceAll("Image", "")
+          case None => "content"
+        }
+      }
       val contentDisposition = data.getOrElse("contentDisposition", "").asInstanceOf[String]
       logger.info("ObjectBundle:: getManifestData:: identifier:: " + identifier + " || objectType:: " + objectType)
       val dUrlMap: Map[AnyRef, String] = getDownloadUrls(identifier, pkgType, isOnline(mimeType, contentDisposition), data)
