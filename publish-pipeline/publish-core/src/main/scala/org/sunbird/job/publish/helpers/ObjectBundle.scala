@@ -41,22 +41,12 @@ trait ObjectBundle {
       val identifier = data.getOrElse("identifier", "").asInstanceOf[String].replaceAll(".img", "")
       val mimeType = data.getOrElse("mimeType", "").asInstanceOf[String]
       println(s"objList data == $data")
-      val objectTypeData = Option(data.getOrElse("objectType", "").asInstanceOf[String]) match {
-        case Some(value) => value
-        case None => ""
-      }
-      val objectType: String = if(!data.contains("objectType") || objectTypeData.isBlank || objectTypeData.isEmpty) {
-        val metaData = Option(neo4JUtil.getNodeProperties(identifier)) match {
-          case Some(value) => value.getOrDefault("IL_FUNC_OBJECT_TYPE","").asInstanceOf[String]
-          case None => "Content"
-        }
-        metaData
-      } else {
-        Option(data.getOrElse("objectType", "").asInstanceOf[String]) match {
-          case Some(value) => value.replaceAll("Image", "")
-          case None => "Content"
-        }
-      }
+
+      val objectType: String = if (!data.contains("objectType") || data.getOrElse("objectType", "").asInstanceOf[String].isBlank || data.getOrElse("objectType", "").asInstanceOf[String].isEmpty) {
+        val metaData = Option(neo4JUtil.getNodeProperties(identifier)).getOrElse(neo4JUtil.getNodeProperties(identifier)).asScala.toMap
+        metaData.getOrElse("IL_FUNC_OBJECT_TYPE", "").asInstanceOf[String]
+      } else data.getOrElse("objectType", "").asInstanceOf[String].replaceAll("Image", "")
+
       val contentDisposition = data.getOrElse("contentDisposition", "").asInstanceOf[String]
       logger.info("ObjectBundle:: getManifestData:: identifier:: " + identifier + " || objectType:: " + objectType)
       val dUrlMap: Map[AnyRef, String] = getDownloadUrls(identifier, pkgType, isOnline(mimeType, contentDisposition), data)
