@@ -46,9 +46,11 @@ trait ObjectBundle {
         case None => ""
       }
       val objectType: String = if(!data.contains("objectType") || objectTypeData.isBlank || objectTypeData.isEmpty) {
-
         val metaData = Option(neo4JUtil.getNodeProperties(identifier)).getOrElse(neo4JUtil.getNodeProperties(identifier)).asScala.toMap
-        metaData.getOrElse("IL_FUNC_OBJECT_TYPE", "").asInstanceOf[String]
+        Option(metaData.getOrElse("IL_FUNC_OBJECT_TYPE", "").asInstanceOf[String]) match {
+          case Some(value) => value
+          case None => "Content"
+        }
       } else {
         Option(data.getOrElse("objectType", "").asInstanceOf[String]) match {
           case Some(value) => value.replaceAll("Image", "")
