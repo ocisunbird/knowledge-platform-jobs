@@ -41,13 +41,18 @@ trait ObjectBundle {
       val identifier = data.getOrElse("identifier", "").asInstanceOf[String].replaceAll(".img", "")
       val mimeType = data.getOrElse("mimeType", "").asInstanceOf[String]
       println(s"objList data == $data")
-      val objectType: String = if(!data.contains("objectType") || data.getOrElse("objectType", "").asInstanceOf[String].isBlank || data.getOrElse("objectType", "").asInstanceOf[String].isEmpty) {
+      val objectTypeData = Option(data.getOrElse("objectType", "").asInstanceOf[String]) match {
+        case Some(value) => value
+        case None => ""
+      }
+      val objectType: String = if(!data.contains("objectType") || objectTypeData.isBlank || objectTypeData.isEmpty) {
+
         val metaData = Option(neo4JUtil.getNodeProperties(identifier)).getOrElse(neo4JUtil.getNodeProperties(identifier)).asScala.toMap
         metaData.getOrElse("IL_FUNC_OBJECT_TYPE", "").asInstanceOf[String]
       } else {
         Option(data.getOrElse("objectType", "").asInstanceOf[String]) match {
           case Some(value) => value.replaceAll("Image", "")
-          case None => "content"
+          case None => "Content"
         }
       }
       val contentDisposition = data.getOrElse("contentDisposition", "").asInstanceOf[String]
